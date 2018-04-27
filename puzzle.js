@@ -1,7 +1,7 @@
 class Node {
-    constructor(gameState, moves) {
-        this.gameState = gameState;
-        this.moves = moves;
+    constructor(state, parent) {
+        this.state = state;
+        this.parent = parent;
     }
 }
 
@@ -112,6 +112,18 @@ const generateMoves = (puzzle) => {
     
 }
 
+const printTree = (tree) => {
+    const treeSize = Math.sqrt(tree.length);
+    for (let i = 0; i < treeSize; i++) {
+        let row = "";
+        for (let j = 0; j < treeSize; j++) {
+            row += `${tree[j + 3*i]} `;
+        }
+        console.log(row);
+    }
+    console.log("");
+}
+
 const tests = [
     [1, 2, 3,
     4, 5, 6,
@@ -122,12 +134,28 @@ const tests = [
     4, 7, 5]
 ];
 
-for (test of tests) {
-    let tree = new Node(test);
-    let queue = [];
-
-    for (let child of generateMoves(tree.gameState)) {
-        console.log(child);
+const breadthFirst = (test) => {
+    let queue = [new Node(test, null)];
+    let currentState = null;
+    let found = false;
+    while (queue.length > 0 && !found) {
+        currentState = queue.shift();
+        if (!checkPuzzle(currentState.state)) { 
+            for (let child of generateMoves(currentState.state)) {
+                queue.push(new Node(child, currentState));
+            }
+        } else {
+            found = true;
+            printTree(currentState.state);
+            while(currentState.parent) {
+                printTree(currentState.parent.state);
+                currentState = currentState.parent;
+            }
+        }
     }
+}
+
+for (test of tests) {
+    breadthFirst(test);
 }
 
