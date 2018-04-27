@@ -137,12 +137,16 @@ const tests = [
 const breadthFirst = (test) => {
     let queue = [new Node(test, null)];
     let currentState = null;
+    let visited = [];
     let found = false;
     while (queue.length > 0 && !found) {
         currentState = queue.shift();
+        visited.push(currentState);
         if (!checkPuzzle(currentState.state)) { 
             for (let child of generateMoves(currentState.state)) {
-                queue.push(new Node(child, currentState));
+                if (!(child in visited)) {
+                    queue.push(new Node(child, currentState));
+                }
             }
         } else {
             found = true;
@@ -156,6 +160,8 @@ const breadthFirst = (test) => {
 }
 
 for (test of tests) {
+    console.time('breadthFirst');
     breadthFirst(test);
+    console.timeEnd('breadthFirst');
 }
 
